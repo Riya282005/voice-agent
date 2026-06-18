@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- Animated background blobs -->
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <div class="nav-logo-circle">J</div>
+      <span>JARVIS</span>
+    </div>
+    <div class="nav-links">
+    <button class="nav-btn active" onclick="showTab('home')">Home</button>
+  <button class="nav-btn" onclick="showTab('history')">History</button>
+  <button class="nav-btn" onclick="showTab('about')">About</button>
+  <button class="nav-btn" onclick="showTab('download')">⬇️ Download</button>
+  <a href="/permissions" class="nav-btn">⚙️ Permissions</a>
+  <a href="/logout" class="nav-btn logout-btn">Logout</a>
+</div>
+    <div class="nav-user">
+      <span>👤 {{ user }}</span>
+    </div>
+  </nav>
+
+  <!-- HOME TAB -->
+  <div id="tab-home" class="tab-content active">
+    <div class="hero">
+      <h2 class="hero-title">Good to see you, <span>{{ user }}</span>!</h2>
+      <p class="hero-sub">Type a command or use the mic to control your desktop</p>
+    </div>
+
+    <!-- Mic Button -->
+    <div class="mic-wrapper">
+      <div class="mic-rings">
+        <div class="ring ring1"></div>
+        <div class="ring ring2"></div>
+        <div class="ring ring3"></div>
+      </div>
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mic-status" id="micStatus">Click mic or type below</div>
+
+    <!-- Chat Area -->
+    <div class="chat-area" id="chatArea">
+      <div class="chat-bubble jarvis">
+        <div class="bubble-avatar">J</div>
+        <div class="bubble-text">Hello {{ user }}! Main Jarvis hoon. Aapki kya madad kar sakta hoon? Try saying "open desktop" or "take screenshot"!</div>
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="input-bar">
+      <input type="text" id="textInput" placeholder="Type a command... e.g. open chrome, take screenshot" onkeypress="handleKey(event)">
+      <button class="send-btn" onclick="sendCommand()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Quick Commands -->
+    <div class="quick-cmds">
+      <p class="quick-label">Quick Commands</p>
+      <div class="quick-grid">
+        <button class="quick-btn" onclick="quickCmd('open desktop')">📁 Desktop</button>
+        <button class="quick-btn" onclick="quickCmd('open chrome')">🌐 Chrome</button>
+        <button class="quick-btn" onclick="quickCmd('take screenshot')">📸 Screenshot</button>
+        <button class="quick-btn" onclick="quickCmd('open camera')">📷 Camera</button>
+        <button class="quick-btn" onclick="quickCmd('volume up')">🔊 Vol Up</button>
+        <button class="quick-btn" onclick="quickCmd('volume down')">🔉 Vol Down</button>
+        <button class="quick-btn" onclick="quickCmd('open downloads')">⬇️ Downloads</button>
+        <button class="quick-btn" onclick="quickCmd('mute')">🔇 Mute</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="tab-history" class="tab-content">
+    <div class="tab-header">
+      <h2>Command History</h2>
+      <p>Last 20 commands</p>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="empty-state">No commands yet — start talking to Jarvis!</div>
+    </div>
+  </div>
+
+  <!-- ABOUT TAB -->
+  <div id="tab-about" class="tab-content">
+    <div class="tab-header">
+      <h2>About Jarvis</h2>
+      <p>Your AI-powered Windows Desktop Voice Agent</p>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-icon">📁</div>
+        <h3>File Management</h3>
+        <p>Open folders, create files, delete files — all with just your voice</p>
+        <div class="examples">
+          <span>"Open desktop"</span>
+          <span>"Create file notes.txt"</span>
+          <span>"Open downloads"</span>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="about-icon">🚀</div>
+        <h3>App Launcher</h3>
+        <p>Launch any application instantly without touching keyboard</p>
+        <div class="examples">
+          <span>"Open Chrome"</span>
+          <span>"Open VS Code"</span>
+          <span>"Open Notepad"</span>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="about-icon">🔍</div>
+        <h3>Web Search</h3>
+        <p>Search Google instantly with natural language commands</p>
+        <div class="examples">
+          <span>"Search Python tutorials"</span>
+          <span>"Search weather Delhi"</span>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="about-icon">📸</div>
+        <h3>Screenshots & Camera</h3>
+        <p>Capture screen or open camera hands-free</p>
+        <div class="examples">
+          <span>"Take screenshot"</span>
+          <span>"Open camera"</span>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="about-icon">🔊</div>
+        <h3>System Controls</h3>
+        <p>Control volume, mute, and other system settings</p>
+        <div class="examples">
+          <span>"Volume up"</span>
+          <span>"Volume down"</span>
+          <span>"Mute"</span>
+        </div>
+      </div>
+
+      <div class="about-card">
+        <div class="about-icon">🧠</div>
+        <h3>AI Memory</h3>
+        <p>Jarvis remembers context — use natural Hinglish commands</p>
+        <div class="examples">
+          <span>"Wahi folder khol"</span>
+          <span>"Chrome band karo"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-stack">
+      <h3>Built With</h3>
+      <div class="tech-pills">
+        <span>Python</span>
+        <span>Flask</span>
+        <span>OpenRouter AI</span>
+        <span>Web Speech API</span>
+        <span>PyAutoGUI</span>
+        <span>SpeechRecognition</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD TAB -->
+<div id="tab-download" class="tab-content">
+  <div class="tab-header">
+    <h2>Download Jarvis</h2>
+    <p>Install Jarvis on your Windows PC</p>
+  </div>
+
+  <div class="download-container">
+
+    <div class="download-hero">
+      <div class="download-icon">🤖</div>
+      <h3>Jarvis Desktop Agent</h3>
+      <p>AI-powered voice assistant for Windows — works offline!</p>
+      <div class="version-badge">v1.0.0 — Windows 10/11</div>
+    </div>
+
+    <div class="download-steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <h4>Download Installer</h4>
+          <p>Click below to download Jarvis setup file</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <h4>Run Setup</h4>
+          <p>Double click installer and follow instructions</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <h4>Start Jarvis</h4>
+          <p>Launch from desktop shortcut and login!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="download-btn-wrap">
+      <a href="/download/windows" class="download-main-btn">
+        <span>⬇️</span>
+        <div>
+          <div class="btn-title">Download for Windows</div>
+          <div class="btn-sub">Windows 10 / 11 — 64 bit</div>
+        </div>
+      </a>
+
+      <div class="system-req">
+        <h4>System Requirements</h4>
+        <div class="req-grid">
+          <div class="req-item"><span>OS</span><p>Windows 10/11 64-bit</p></div>
+          <div class="req-item"><span>RAM</span><p>4 GB minimum</p></div>
+          <div class="req-item"><span>Storage</span><p>500 MB free space</p></div>
+          <div class="req-item"><span>Internet</span><p>Required for AI features</p></div>
+          <div class="req-item"><span>Mic</span><p>For voice commands</p></div>
+          <div class="req-item"><span>Python</span><p>Auto-installed</p></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

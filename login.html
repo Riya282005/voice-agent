@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #0a0a0f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Rajdhani', sans-serif;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation: pulse 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      animation: pulse 6s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+    .login-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 24px;
+      padding: 50px 40px;
+      width: 420px;
+      backdrop-filter: blur(20px);
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 0 60px rgba(99,102,241,0.1);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .logo-circle {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      color: white;
+      box-shadow: 0 0 30px rgba(99,102,241,0.5);
+      animation: glow 3s ease-in-out infinite;
+    }
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 30px rgba(99,102,241,0.5); }
+      50% { box-shadow: 0 0 60px rgba(99,102,241,0.9), 0 0 100px rgba(6,182,212,0.3); }
+    }
+    .logo h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      color: white;
+      letter-spacing: 8px;
+    }
+    .logo p {
+      color: rgba(255,255,255,0.35);
+      font-size: 12px;
+      letter-spacing: 3px;
+      margin-top: 6px;
+    }
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .success-msg {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86efac;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: center;
+      display: none;
+    }
+    .input-group { margin-bottom: 18px; }
+    .input-group label {
+      display: block;
+      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .input-group input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: white;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .input-group input:focus {
+      border-color: rgba(99,102,241,0.8);
+      background: rgba(99,102,241,0.08);
+      box-shadow: 0 0 20px rgba(99,102,241,0.15);
+    }
+    .input-group input::placeholder { color: rgba(255,255,255,0.2); }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 6px;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.4); }
+    .btn:active { transform: translateY(0); }
+    .switch-link {
+      text-align: center;
+      margin-top: 20px;
+      color: rgba(255,255,255,0.3);
+      font-size: 14px;
+    }
+    .switch-link span {
+      color: rgba(99,102,241,0.8);
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .switch-link span:hover { color: #06b6d4; }
+    .hint {
+      text-align: center;
+      margin-top: 12px;
+      color: rgba(255,255,255,0.2);
+      font-size: 12px;
+    }
+    .hint span { color: rgba(99,102,241,0.6); }
+    .tab-indicator {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .tab-pill {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid rgba(99,102,241,0.2);
+      color: rgba(255,255,255,0.4);
+    }
+    .tab-pill.active {
+      background: rgba(99,102,241,0.15);
+      border-color: rgba(99,102,241,0.5);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+
+    <div class="logo">
+      <div class="logo-circle">J</div>
+      <h1>JARVIS</h1>
+      <p id="formSubtitle">DESKTOP VOICE AGENT</p>
+    </div>
+
+    <div class="tab-indicator">
+      <div class="tab-pill active" id="loginTab" onclick="switchTab('login')">Login</div>
+      <div class="tab-pill" id="registerTab" onclick="switchTab('register')">Create Account</div>
+    </div>
+
+    <!-- Error / Success -->
+    <div class="error-msg" id="errorMsg">
+      {% if error %}{{ error }}{% endif %}
+    </div>
+    <div class="success-msg" id="successMsg"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <form method="POST" action="/login">
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="Enter username" required autofocus>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn">INITIALIZE JARVIS</button>
+      </form>
+      <div class="hint" style="margin-top:14px;">
+        Default: <span>riya</span> / <span>riya1234</span>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none;">
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="regUser" placeholder="Min 3 characters" oninput="validateUsername(this)">
+        <div id="usernameHint" style="font-size:12px; margin-top:5px; display:none;"></div>
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="regPass" placeholder="Min 6 characters" oninput="checkStrength(this.value)">
+        <!-- Strength Bar -->
+        <div style="margin-top:8px;">
+          <div style="height:4px; background:rgba(255,255,255,0.08); border-radius:4px; overflow:hidden;">
+            <div id="strengthBar" style="height:100%; width:0%; border-radius:4px; transition:all 0.4s;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; margin-top:5px;">
+            <span id="strengthText" style="font-size:11px; color:rgba(255,255,255,0.3);">Password strength</span>
+            <span id="strengthLabel" style="font-size:11px;"></span>
+          </div>
+        </div>
+        <!-- Requirements checklist -->
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:4px;" id="reqList">
+          <div id="req-len"  style="font-size:12px; color:rgba(255,255,255,0.25);">○ &nbsp;Min 6 characters</div>
+          <div id="req-upper" style="font-size:12px; color:rgba(255,255,255,0.25);">○ &nbsp;At least 1 uppercase letter</div>
+          <div id="req-num"  style="font-size:12px; color:rgba(255,255,255,0.25);">○ &nbsp;At least 1 number</div>
+          <div id="req-spec" style="font-size:12px; color:rgba(255,255,255,0.25);">○ &nbsp;At least 1 special character (!@#$...)</div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input type="password" id="regPassConfirm" placeholder="Repeat password" oninput="checkMatch()">
+        <div id="matchHint" style="font-size:12px; margin-top:5px; display:none;"></div>
+      </div>
+      <button class="btn" onclick="registerUser()">CREATE ACCOUNT</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Show error if exists
+    const errMsg = document.getElementById('errorMsg');
+    if (errMsg.textContent.trim()) errMsg.style.display = 'block';
+
+    function switchTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const regForm = document.getElementById('registerForm');
+      const loginTab = document.getElementById('loginTab');
+      const regTab = document.getElementById('registerTab');
+      const subtitle = document.getElementById('formSubtitle');
+      const errDiv = document.getElementById('errorMsg');
+      const sucDiv = document.getElementById('successMsg');
+
+      errDiv.style.display = 'none';
+      sucDiv.style.display = 'none';
+
+      if (tab === 'login') {
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+        loginTab.classList.add('active');
+        regTab.classList.remove('active');
+        subtitle.textContent = 'DESKTOP VOICE AGENT';
+      } else {
+        loginForm.style.display = 'none';
+        regForm.style.display = 'block';
+        loginTab.classList.remove('active');
+        regTab.classList.add('active');
+        subtitle.textContent = 'NEW ACCOUNT';
+      }
+    }
+
+    // ── Username validation ──
+    function validateUsername(input) {
+      const val = input.value.trim();
+      const hint = document.getElementById('usernameHint');
+      hint.style.display = 'block';
+      if (val.length === 0) { hint.style.display = 'none'; return; }
+      if (val.length < 3) {
+        hint.textContent = '❌ Username kam se kam 3 characters ka hona chahiye';
+        hint.style.color = 'rgba(239,68,68,0.8)';
+      } else if (/\s/.test(val)) {
+        hint.textContent = '❌ Username mein spaces nahi ho sakte';
+        hint.style.color = 'rgba(239,68,68,0.8)';
+      } else if (!/^[a-zA-Z0-9_]+$/.test(val)) {
+        hint.textContent = '❌ Sirf letters, numbers aur underscore allowed hai';
+        hint.style.color = 'rgba(239,68,68,0.8)';
+      } else {
+        hint.textContent = '✅ Username valid hai!';
+        hint.style.color = 'rgba(34,197,94,0.8)';
+      }
+    }
+
+    // ── Password strength meter ──
+    function checkStrength(password) {
+      const bar   = document.getElementById('strengthBar');
+      const label = document.getElementById('strengthLabel');
+
+      const hasLen   = password.length >= 6;
+      const hasUpper = /[A-Z]/.test(password);
+      const hasNum   = /[0-9]/.test(password);
+      const hasSpec  = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+
+      // Update checklist
+      setReq('req-len',   hasLen);
+      setReq('req-upper', hasUpper);
+      setReq('req-num',   hasNum);
+      setReq('req-spec',  hasSpec);
+
+      const score = [hasLen, hasUpper, hasNum, hasSpec].filter(Boolean).length;
+
+      const levels = [
+        { w: '0%',   color: 'transparent',            text: '',         col: '' },
+        { w: '25%',  color: '#ef4444',                text: 'Weak',     col: 'rgba(239,68,68,0.8)' },
+        { w: '50%',  color: '#f97316',                text: 'Fair',     col: 'rgba(249,115,22,0.8)' },
+        { w: '75%',  color: '#eab308',                text: 'Good',     col: 'rgba(234,179,8,0.8)' },
+        { w: '100%', color: 'linear-gradient(90deg,#6366f1,#06b6d4)', text: 'Strong ✨', col: 'rgba(34,197,94,0.9)' },
+      ];
+
+      const lvl = password.length === 0 ? levels[0] : levels[score];
+      bar.style.width      = lvl.w;
+      bar.style.background = lvl.color;
+      label.textContent    = lvl.text;
+      label.style.color    = lvl.col;
+    }
+
+    function setReq(id, met) {
+      const el = document.getElementById(id);
+      if (met) {
+        el.style.color = 'rgba(34,197,94,0.85)';
+        el.textContent = el.textContent.replace('○', '✓');
+      } else {
+        el.style.color = 'rgba(255,255,255,0.25)';
+        el.textContent = el.textContent.replace('✓', '○');
+      }
+    }
+
+    // ── Confirm password match ──
+    function checkMatch() {
+      const pass    = document.getElementById('regPass').value;
+      const confirm = document.getElementById('regPassConfirm').value;
+      const hint    = document.getElementById('matchHint');
+      if (!confirm) { hint.style.display = 'none'; return; }
+      hint.style.display = 'block';
+      if (pass === confirm) {
+        hint.textContent = '✅ Passwords match kar rahe hain!';
+        hint.style.color = 'rgba(34,197,94,0.8)';
+      } else {
+        hint.textContent = '❌ Passwords match nahi kar rahe';
+        hint.style.color = 'rgba(239,68,68,0.8)';
+      }
+    }
+
+    // ── Register submit ──
+    async function registerUser() {
+      const username = document.getElementById('regUser').value.trim();
+      const password = document.getElementById('regPass').value;
+      const confirm  = document.getElementById('regPassConfirm').value;
+      const errDiv   = document.getElementById('errorMsg');
+      const sucDiv   = document.getElementById('successMsg');
+
+      errDiv.style.display = 'none';
+      sucDiv.style.display = 'none';
+
+      const showErr = (msg) => {
+        errDiv.textContent = msg;
+        errDiv.style.display = 'block';
+      };
+
+      // Field empty check
+      if (!username || !password || !confirm) return showErr('Sab fields bharo!');
+
+      // Username checks
+      if (username.length < 3)          return showErr('Username min 3 characters ka hona chahiye!');
+      if (/\s/.test(username))           return showErr('Username mein spaces nahi ho sakte!');
+      if (!/^[a-zA-Z0-9_]+$/.test(username)) return showErr('Username mein sirf letters, numbers aur _ allowed hain!');
+
+      // Password strength checks
+      if (password.length < 6)           return showErr('Password min 6 characters ka hona chahiye!');
+      if (!/[A-Z]/.test(password))       return showErr('Password mein kam se kam 1 uppercase letter honi chahiye!');
+      if (!/[0-9]/.test(password))       return showErr('Password mein kam se kam 1 number hona chahiye!');
+      if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password))
+                                          return showErr('Password mein kam se kam 1 special character hona chahiye!');
+
+      // Match check
+      if (password !== confirm)          return showErr('Passwords match nahi kar rahe!');
+
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        showErr(data.error);
+      } else {
+        sucDiv.textContent = '✅ Account ban gaya! Ab login karo.';
+        sucDiv.style.display = 'block';
+        setTimeout(() => switchTab('login'), 1500);
+      }
+    }
+  </script>
+</body>
+</html>

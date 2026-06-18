@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jarvis — Permissions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #0a0a0f;
+      font-family: 'Rajdhani', sans-serif;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      pointer-events: none;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      position: relative;
+      z-index: 1;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .logo-circle {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      box-shadow: 0 0 30px rgba(99,102,241,0.5);
+    }
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header p { color: rgba(255,255,255,0.4); font-size: 15px; }
+
+    .perm-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.3s;
+    }
+    .perm-card:hover { border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.05); }
+    .perm-card.always-on { border-color: rgba(6,182,212,0.3); opacity: 0.7; }
+
+    .perm-icon { font-size: 28px; flex-shrink: 0; }
+
+    .perm-info { flex: 1; }
+    .perm-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 4px;
+    }
+    .perm-desc { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+
+    .perm-examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .perm-examples span {
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.2);
+      color: rgba(6,182,212,0.8);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+    }
+
+    /* Toggle Switch */
+    .toggle {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 28px;
+      transition: 0.3s;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .slider:before {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    input:checked + .slider { background: linear-gradient(135deg, #6366f1, #06b6d4); border-color: transparent; }
+    input:checked + .slider:before { transform: translateX(24px); }
+    .always-tag {
+      background: rgba(6,182,212,0.1);
+      border: 1px solid rgba(6,182,212,0.3);
+      color: rgba(6,182,212,0.8);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      border: none;
+      border-radius: 14px;
+      color: white;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+    .save-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99,102,241,0.4); }
+
+    .note {
+      text-align: center;
+      color: rgba(255,255,255,0.2);
+      font-size: 13px;
+      margin-top: 16px;
+    }
+    .note span { color: rgba(99,102,241,0.6); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-circle">J</div>
+      <h1>JARVIS PERMISSIONS</h1>
+      <p>Choose what Jarvis can access on your system</p>
+    </div>
+
+    <form method="POST" action="/permissions">
+
+      <!-- Always On -->
+      <div class="perm-card always-on">
+        <div class="perm-icon">🕐</div>
+        <div class="perm-info">
+          <div class="perm-name">Date, Time & Basic Info</div>
+          <div class="perm-desc">Always available — no permission needed</div>
+          <div class="perm-examples">
+            <span>"What's the time?"</span>
+            <span>"What's today's date?"</span>
+          </div>
+        </div>
+        <span class="always-tag">Always On</span>
+      </div>
+
+      <!-- Weather -->
+      <div class="perm-card always-on">
+        <div class="perm-icon">🌤️</div>
+        <div class="perm-info">
+          <div class="perm-name">Weather</div>
+          <div class="perm-desc">Current temperature and weather info</div>
+          <div class="perm-examples">
+            <span>"What's the temperature?"</span>
+            <span>"Weather today?"</span>
+          </div>
+        </div>
+        <span class="always-tag">Always On</span>
+      </div>
+
+      <!-- File System -->
+      <div class="perm-card">
+        <div class="perm-icon">📁</div>
+        <div class="perm-info">
+          <div class="perm-name">File System Access</div>
+          <div class="perm-desc">Open, create, delete folders and files</div>
+          <div class="perm-examples">
+            <span>"Open desktop"</span>
+            <span>"Create file notes.txt"</span>
+            <span>"Find file resume"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="file_system" {% if perms.file_system %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Apps -->
+      <div class="perm-card">
+        <div class="perm-icon">🚀</div>
+        <div class="perm-info">
+          <div class="perm-name">App Launcher</div>
+          <div class="perm-desc">Open and close applications</div>
+          <div class="perm-examples">
+            <span>"Open Chrome"</span>
+            <span>"Open VS Code"</span>
+            <span>"Close Notepad"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="apps" {% if perms.apps %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Screenshot -->
+      <div class="perm-card">
+        <div class="perm-icon">📸</div>
+        <div class="perm-info">
+          <div class="perm-name">Screenshot</div>
+          <div class="perm-desc">Capture your screen anytime</div>
+          <div class="perm-examples">
+            <span>"Take screenshot"</span>
+            <span>"Capture screen"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="screenshot" {% if perms.screenshot %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Camera -->
+      <div class="perm-card">
+        <div class="perm-icon">📷</div>
+        <div class="perm-info">
+          <div class="perm-name">Camera Access</div>
+          <div class="perm-desc">Open and close camera app</div>
+          <div class="perm-examples">
+            <span>"Open camera"</span>
+            <span>"Close camera"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="camera" {% if perms.camera %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- System Control -->
+      <div class="perm-card">
+        <div class="perm-icon">⚙️</div>
+        <div class="perm-info">
+          <div class="perm-name">System Control</div>
+          <div class="perm-desc">Volume, brightness, battery, settings</div>
+          <div class="perm-examples">
+            <span>"Volume up"</span>
+            <span>"Battery status"</span>
+            <span>"Open settings"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="system_control" {% if perms.system_control %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Web Search -->
+      <div class="perm-card">
+        <div class="perm-icon">🔍</div>
+        <div class="perm-info">
+          <div class="perm-name">Web Search</div>
+          <div class="perm-desc">Search Google and open websites</div>
+          <div class="perm-examples">
+            <span>"Search Python tutorials"</span>
+            <span>"Open YouTube"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="web_search" {% if perms.web_search %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Reminders -->
+      <div class="perm-card">
+        <div class="perm-icon">⏰</div>
+        <div class="perm-info">
+          <div class="perm-name">Reminders & Timers</div>
+          <div class="perm-desc">Set reminders and countdown timers</div>
+          <div class="perm-examples">
+            <span>"Remind me in 10 minutes"</span>
+            <span>"Set timer 5 minutes"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="reminders" {% if perms.reminders %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Clipboard -->
+      <div class="perm-card">
+        <div class="perm-icon">📋</div>
+        <div class="perm-info">
+          <div class="perm-name">Clipboard Access</div>
+          <div class="perm-desc">Read and write clipboard content</div>
+          <div class="perm-examples">
+            <span>"Type this text"</span>
+            <span>"Copy last command"</span>
+          </div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" name="clipboard" {% if perms.clipboard %}checked{% endif %}>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button type="submit" class="save-btn">SAVE & CONTINUE TO JARVIS</button>
+    </form>
+
+    <div class="note">
+      You can change permissions anytime from <span>Settings</span> in dashboard
+    </div>
+  </div>
+</body>
+</html>
